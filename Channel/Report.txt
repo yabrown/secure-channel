@@ -1,0 +1,25 @@
+Threat: The attacker might intercept the message and try to read it (confidentiality).
+Prevention: The message is encrypted. That's like the whole point of this thing.
+
+Threat: If the attacker knows one of the message contents, they might brute force try different keys to guess the right one.
+Prevention: That is computationally hard, and cannot be done in a reasonable amount of time. 
+
+Threat: Attacker might seperately create a connection with the client and server, and simply pass messages between them, thus giving the
+attacker access to the contents.
+Prevention: The server has to sign the shared session key with it's private key, and the client will only accept the connection after
+veriying it with the server's public key. Since the server-MITM session key is different from the MITM-client session key, and the MITM 
+doesn't have access to the server's private key, there is no way for the MITM to give the client a correct signature.
+
+Threat: Attacker might save a message and resend it at a later time (replay attack)-- since the message was correctly encrypted, it will
+be accepted by the reciever despite not having been sent by the other party.
+Prevention: The nonce doubles as a sequence number and is encoded in the MAC-- if the attacker tried to replay an old message, it's MAC 
+(which is based on an old nonce) won't match the expected MAC calculated by the recipient (which is based on the expected nonce).
+
+Threat: The attacker might somehow tamper with the ciphertext (integrity).
+Prevention: The MAC encodes the ciphertext, so if the ciphertext were changed in anyway the received MAC wouldn't match the expected MAC.
+The MAC is calculated using the session key, so the attacker can't recalculate it without access to that. 
+
+Threat: If attacker somehow breaks the encryption and deduces the key, they can read and manipulate all traffic.
+Prevention: We use our session key to generate 4 different keys, which are different for MAC generation and encryption within a user,
+and are also different for the client and server. The attacker needs to get all 4 keys to successfully read AND manipulate traffic from 
+the client AND the server.
